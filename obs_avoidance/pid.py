@@ -163,7 +163,7 @@ class SurveyPathFollower(Node):
     def __init__(self):
         super().__init__('survey_path_follower_pid')
 
-        self.declare_parameter('disturbance_model', False)
+        self.declare_parameter('disturbance_model', True)
         self.disturbance_model = bool(self.get_parameter('disturbance_model').value)
 
         # Instantiate PID controllers for position outer loop
@@ -177,10 +177,10 @@ class SurveyPathFollower(Node):
         self.detection_enabled   = False
 
         # ---------------- Subscribers ----------------
-        self.sub_pose  = self.create_subscription(PoseStamped, "/model/bluerov2_ping/pose", self.pose_callback, qos_profile_sensor_data)
-        self.sub_odom  = self.create_subscription(Odometry, "/model/bluerov2_ping/odometry", self.odom_callback, qos_profile_sensor_data)
-        self.sub_sonar = self.create_subscription(LaserScan, "/ping_link/sensor/sonar", self.sonar_callback, qos_profile_sensor_data)
-        self.sub_imu   = self.create_subscription(Imu, "/world/bluerov2_ping/model/bluerov2_ping/link/base_link/sensor/imu_sensor/imu", self.imu_callback, qos_profile_sensor_data)
+        self.sub_pose  = self.create_subscription(PoseStamped, "/model/rov/pose", self.pose_callback, qos_profile_sensor_data)
+        self.sub_odom  = self.create_subscription(Odometry, "/model/rov/odometry", self.odom_callback, qos_profile_sensor_data)
+        self.sub_sonar = self.create_subscription(LaserScan, "/model/rov/sonar", self.sonar_callback, qos_profile_sensor_data)
+        self.sub_imu   = self.create_subscription(Imu, "/model/rov/imu", self.imu_callback, qos_profile_sensor_data)
 
         # ---------------- Publishers ----------------
         self.pub_setpoint       = self.create_publisher(PositionTarget, "/mavros/setpoint_raw/local", 30)
@@ -386,8 +386,8 @@ class SurveyPathFollower(Node):
             marker.pose.position.y = float(obs_xy[1])
             marker.pose.position.z = float(tz / 2.0)
             marker.pose.orientation.w = 1.0
-            marker.scale.x = float(self.obstacle_controller.obstacle_diameter)
-            marker.scale.y = float(self.obstacle_controller.obstacle_diameter)
+            marker.scale.x = float(obstacle_diameter)
+            marker.scale.y = float(obstacle_diameter)
             marker.scale.z = abs(float(tz))
             marker.color.r = 1.0
             marker.color.g = 0.5
